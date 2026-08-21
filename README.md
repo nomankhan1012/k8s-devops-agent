@@ -1,9 +1,30 @@
 # Kubernetes DevOps Agent
 
+  ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
+  ![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-orange?logo=amazonaws)
+  ![LangGraph](https://img.shields.io/badge/LangGraph-ReAct-green)
+  ![EKS](https://img.shields.io/badge/Amazon-EKS-orange?logo=amazonaws)
+  ![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
   An AI-powered DevOps agent that monitors, diagnoses, and repairs Kubernetes workloads using natural language. Built in
   three progressive stages — from raw Bedrock tool-calling to a production AgentCore deployment on EKS.
 
-  ## Architecture
+  ## Demo
+
+  ```bash
+  $ agentcore invoke --prompt "Check all pods and give me a health report"
+
+  Calling get_pod_status...
+
+  Pod Health Report — Cluster: devops-agent (us-east-1)
+  ──────────────────────────────────────────────────────
+  api         Running  ✅   Restarts: 0
+  web         Running  ✅   Restarts: 0
+  broken-app  Pending  ⚠️   ImagePullBackOff (nginx:doesnotexist)
+
+  Summary: 2/3 pods healthy. broken-app is failing due to an invalid image.
+
+  Architecture
 
   agentcore invoke
         │
@@ -16,28 +37,41 @@
         ▼
   kubectl → Amazon EKS (us-east-1)
 
-  ## Stack
+  Stack
 
-  | Layer | Technology |
-  |-------|-----------|
-  | LLM | Amazon Bedrock — Claude Sonnet (us.anthropic.claude-sonnet-4-6) |
-  | Agent Framework | LangGraph ReAct — parallel tool calls + conversation memory |
-  | Runtime | Amazon Bedrock AgentCore |
-  | Kubernetes | Amazon EKS (us-east-1) |
-  | Metrics | Prometheus (PromQL) |
-  | Container | Docker + Amazon ECR |
-  | Auth | AWS IAM — execution role with EKS access entry |
+  ┌─────────────────┬─────────────────────────────────────────────────────────────────┐
+  │      Layer      │                           Technology                            │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ LLM             │ Amazon Bedrock — Claude Sonnet (us.anthropic.claude-sonnet-4-6) │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Agent Framework │ LangGraph ReAct — parallel tool calls + conversation memory     │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Runtime         │ Amazon Bedrock AgentCore                                        │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Kubernetes      │ Amazon EKS (us-east-1)                                          │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Metrics         │ Prometheus (PromQL)                                             │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Container       │ Docker + Amazon ECR                                             │
+  ├─────────────────┼─────────────────────────────────────────────────────────────────┤
+  │ Auth            │ AWS IAM — execution role with EKS access entry                  │
+  └─────────────────┴─────────────────────────────────────────────────────────────────┘
 
-  ## Agent Tools
+  Agent Tools
 
-  | Tool | Description |
-  |------|-------------|
-  | `get_pod_status` | Lists all pods and their health in a namespace |
-  | `get_pod_logs` | Fetches recent logs from a specific pod |
-  | `restart_pod` | Restarts a deployment (requires `auto_approve=true`) |
-  | `query_metrics` | Queries Prometheus via PromQL |
+  ┌────────────────┬────────────────────────────────────────────────────┐
+  │      Tool      │                    Description                     │
+  ├────────────────┼────────────────────────────────────────────────────┤
+  │ get_pod_status │ Lists all pods and their health in a namespace     │
+  ├────────────────┼────────────────────────────────────────────────────┤
+  │ get_pod_logs   │ Fetches recent logs from a specific pod            │
+  ├────────────────┼────────────────────────────────────────────────────┤
+  │ restart_pod    │ Restarts a deployment (requires auto_approve=true) │
+  ├────────────────┼────────────────────────────────────────────────────┤
+  │ query_metrics  │ Queries Prometheus via PromQL                      │
+  └────────────────┴────────────────────────────────────────────────────┘
 
-  ## Project Structure
+  Project Structure
 
   k8s-devops-agent/
   ├── agent.py               # Phase 1: Raw Bedrock tool-calling loop
@@ -54,11 +88,10 @@
           ├── Dockerfile     # python:3.12-slim + awscli + kubectl
           └── pyproject.toml
 
-  ## Usage
+  Usage
 
-  **AgentCore (Production)**
+  AgentCore (Production)
 
-  ```bash
   cd k8sdevopsagent && agentcore deploy
 
   agentcore invoke --prompt "Check all pods and give me a health report"
