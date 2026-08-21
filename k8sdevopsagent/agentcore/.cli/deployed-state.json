@@ -1,0 +1,17 @@
+{
+  "targets": {
+    "default": {
+      "resources": {
+        "runtimes": {
+          "k8sdevopsagent": {
+            "runtimeId": "k8sdevopsagent_k8sdevopsagent-4n4WLYFjmd",
+            "runtimeArn": "arn:aws:bedrock-agentcore:us-east-1:113645088455:runtime/k8sdevopsagent_k8sdevopsagent-4n4WLYFjmd",
+            "roleArn": "arn:aws:iam::113645088455:role/AgentCore-k8sdevopsagent--ApplicationAgentK8sdevops-6vPFqnpHJRRz"
+          }
+        },
+        "stackName": "AgentCore-k8sdevopsagent-default",
+        "deployHash": "7d5ff4cddfdd7c73"
+      }
+    }
+  }
+}
